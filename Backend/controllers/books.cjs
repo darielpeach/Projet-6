@@ -39,9 +39,9 @@ const modifyBook = (req, res, next) => {
 };
 
 const rateBook = (req, res, next) => {
-    const userId = req.auth.userId;
-    const { rating } = req.body;  // On reçoit "rating" du frontend
-    const bookId = req.params.id;
+    const userId = req.auth.userId
+    const { rating } = req.body
+    const bookId = req.params.id
 
 
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
@@ -49,35 +49,35 @@ const rateBook = (req, res, next) => {
     }
 
     if (!rating || typeof rating !== 'number' || rating < 1 || rating > 5) {
-        return res.status(400).json({ error: 'Invalid rating. Must be a number between 1 and 5.' });
+        return res.status(400).json({ error: 'Invalid rating. Must be a number between 1 and 5.' })
     }
 
     bookSchema.findOne({ _id: bookId })
         .then(book => {
             if (!book) {
-                return res.status(404).json({ message: 'Livre non trouvé' });
+                return res.status(404).json({ message: 'Livre non trouvé' })
             }
 
-            const existingRating = book.ratings.find(r => r.userId === userId);
+            const existingRating = book.ratings.find(r => r.userId === userId)
 
             if (existingRating) {
-                existingRating.grade = rating;  // Assigne "rating" au champ "grade"
+                existingRating.grade = rating
             } else {
-                book.ratings.push({ userId, grade: rating });  // Assigne "rating" au champ "grade"
+                book.ratings.push({ userId, grade: rating })
             }
 
-            book.averageRating = calculateAverageRating(book.ratings);
+            book.averageRating = calculateAverageRating(book.ratings)
 
             book.save()
                 .then(updateBook => {
                     res.status(200).json(updateBook)
                 })
                 .catch(error => {
-                    res.status(400).json({ error });
+                    res.status(400).json({ error })
                 });
         })
         .catch(error => {
-            res.status(500).json({ error });
+            res.status(500).json({ error })
         });
 };
 

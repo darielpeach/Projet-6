@@ -1,0 +1,15 @@
+# Mon vieux Grimoire
+
+## Comment configurer le projet ? 
+
+Vous créez un fichier .env dans le backend qui doit se présenter comme ceci : 
+
+MONGO_URI=<votre_url_mongodb>
+TOKEN_SECRET=<votre_token_secret>
+PORT=<votre_port>
+
+
+### Avec nodemon
+
+Pour lancer le serveur il faut préciser l'extension : 
+nodemon server.cjs

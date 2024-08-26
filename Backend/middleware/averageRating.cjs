@@ -1,7 +1,8 @@
 const calculateAverageRating = (ratings) => {
     if (ratings.length === 0) return 0
     const total = ratings.reduce((acc, rating) => acc + rating.grade, 0)
-    return total / ratings.length
+    const average = total / ratings.length
+    return Math.round(average * 100) / 100
 }
 
 const applyAverage = (bookSchema) => {

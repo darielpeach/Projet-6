@@ -40,41 +40,37 @@ const modifyBook = (req, res, next) => {
 
 const rateBook = (req, res, next) => {
     const userId = req.auth.userId;
-    const { grade } = req.body;
+    const { rating } = req.body;  // On reçoit "rating" du frontend
     const bookId = req.params.id;
+
 
     if (!mongoose.Types.ObjectId.isValid(bookId)) {
         return res.status(400).json({ error: 'Invalid book ID' });
     }
 
-    if (!grade || typeof grade !== 'number' || grade < 1 || grade > 5) {
-        return res.status(400).json({ error: 'Invalid grade. Must be a number between 1 and 5.' });
+    if (!rating || typeof rating !== 'number' || rating < 1 || rating > 5) {
+        return res.status(400).json({ error: 'Invalid rating. Must be a number between 1 and 5.' });
     }
-
-    console.log("ID du livre:", bookId);
-    console.log("ID de l'utilisateur:", userId);
-    console.log("Note donnée:", grade);
 
     bookSchema.findOne({ _id: bookId })
         .then(book => {
             if (!book) {
-                console.log("Livre non trouvé");
                 return res.status(404).json({ message: 'Livre non trouvé' });
             }
 
-            const existingRating = book.ratings.find(rating => rating.userId === userId);
+            const existingRating = book.ratings.find(r => r.userId === userId);
 
             if (existingRating) {
-                existingRating.grade = grade;
+                existingRating.grade = rating;  // Assigne "rating" au champ "grade"
             } else {
-                book.ratings.push({ userId, grade });
+                book.ratings.push({ userId, grade: rating });  // Assigne "rating" au champ "grade"
             }
 
             book.averageRating = calculateAverageRating(book.ratings);
 
             book.save()
-                .then(() => {
-                    res.status(200).json({ message: 'Note enregistrée !' });
+                .then(updateBook => {
+                    res.status(200).json(updateBook)
                 })
                 .catch(error => {
                     res.status(400).json({ error });
@@ -84,6 +80,7 @@ const rateBook = (req, res, next) => {
             res.status(500).json({ error });
         });
 };
+
 
 
 
